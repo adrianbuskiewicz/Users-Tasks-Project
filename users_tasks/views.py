@@ -1,5 +1,7 @@
+from django.http import HttpResponse
 from tasks_csv.models import User, Task
 import requests
+import csv
 
 
 # Create your views here.
@@ -30,4 +32,35 @@ def update_db():
             user=user,
         )
         task.save()
+
+
+def csv_file_view(request):
+    update_db()
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': 'attachment;'
+                                        ' filename="users_tasks.csv"'},
+    )
+
+    tasks = Task.objects.all()
+    writer = csv.writer(response)
+    writer.writerow(
+        [
+            'name',
+            'city',
+            'title',
+            'completed',
+        ]
+    )
+
+    for task in tasks:
+        writer.writerow(
+            [
+                task.user.name,
+                task.user.address['city'],
+                task.title,
+                task.completed,
+            ]
+        )
+    return response
 
