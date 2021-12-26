@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from tasks_csv.models import User, Task
+from .models import User, Task
 import requests
 import csv
 
@@ -44,14 +44,15 @@ def csv_file_view(request):
 
     tasks = Task.objects.all()
     writer = csv.writer(response)
-    writer.writerow(
-        [
+
+    headers = [
             'name',
             'city',
             'title',
             'completed',
         ]
-    )
+
+    writer.writerow(headers)
 
     for task in tasks:
         writer.writerow(
