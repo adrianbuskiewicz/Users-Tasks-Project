@@ -7,6 +7,12 @@ import csv
 # Create your views here.
 
 def update_db():
+    """
+    To be sure our app contains up to date data
+    we need to clear the data previously had in our database.
+    Then we download and save our data again in database.
+    """
+
     User.objects.all().delete()
     Task.objects.all().delete()
 
