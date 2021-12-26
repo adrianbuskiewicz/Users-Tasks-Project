@@ -1,3 +1,33 @@
-from django.shortcuts import render
+from tasks_csv.models import User, Task
+import requests
+
 
 # Create your views here.
+
+def update_db():
+    User.objects.all().delete()
+    Task.objects.all().delete()
+
+    url = "https://jsonplaceholder.typicode.com/{}"
+
+    users_data = requests.get(url=url.format('users'))
+    users_json = users_data.json()
+
+    tasks_data = requests.get(url=url.format('todos'))
+    tasks_json = tasks_data.json()
+
+    for user_data in users_json:
+        user = User(**user_data)
+        user.save()
+
+    for task_data in tasks_json:
+        user_id = task_data['userId']
+        user = User.objects.get(id=user_id)
+        task = Task(
+            id=task_data['id'],
+            title=task_data['title'],
+            completed=task_data['completed'],
+            user=user,
+        )
+        task.save()
+
